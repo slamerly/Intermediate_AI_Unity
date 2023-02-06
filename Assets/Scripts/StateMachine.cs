@@ -2,11 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SC_StateMachine : MonoBehaviour
+public class StateMachine : MonoBehaviour
 {
-    public SC_BaseState currentState;
+    public WakeUpState currentState = new WakeUpState();
+
+    public GameObject cat { get; set; }
 
     bool isHungry, seeDog, isTired, wantPoop;
+
+    private void Awake()
+    {
+        cat = gameObject;
+    }
 
     void Start()
     {
