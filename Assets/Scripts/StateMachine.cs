@@ -1,18 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class StateMachine : MonoBehaviour
 {
-    public WakeUpState currentState = new WakeUpState();
+    public Transform food;
+    public List<Transform> wayToWalk;
 
-    public GameObject cat { get; set; }
+    public bool isHungry, seeDog, isTired, wantPlay;
+    public float delay = 0;
 
-    bool isHungry, seeDog, isTired, wantPoop;
+    public NavMeshAgent agent { get; private set; }
 
+    BaseState currentState;
     private void Awake()
     {
-        cat = gameObject;
+        currentState = new WakeUpState();
+        agent = GetComponent<NavMeshAgent>();
     }
 
     void Start()
@@ -22,13 +27,21 @@ public class StateMachine : MonoBehaviour
 
     void Update()
     {
-        currentState.OnUpdate();
+        if (delay <= 0)
+        {
+            currentState.OnUpdate();
+        }
+        delay -= Time.deltaTime;
     }
 
     public void OnStateEnd()
     {
-        
+        if (isHungry)
+            currentState = new EatState();
+        else
+            currentState = new WalkState();
 
+        currentState.OnStart(this);
 
     }
 }
