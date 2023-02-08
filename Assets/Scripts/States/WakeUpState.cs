@@ -28,7 +28,7 @@ public class WakeUpState : BaseState
             stateM.isHungry = true;
         }
         else
-            stateM.isHungry = false;
+            stateM.isWalking = true;
         Debug.Log("Hungry: "+  stateM.isHungry);
         stateM.OnStateEnd();
 

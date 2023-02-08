@@ -30,43 +30,46 @@ public class WalkState : BaseState
             {
                 current = (current + 1) % stateM.wayToWalk.Count;
                 ready = false;
-                //Debug.Log("No one here");
                 OnStateEnd();
-                MoveToNextTaget();
             }
         }
     }
 
     public override void OnStateEnd()
     {
-        int rand = Random.Range(0, 2);
+        int rand = Random.Range(3, 4);
 
         switch(rand)
         {
             // Continue
             case 0:
                 Debug.Log("No one here.");
+                MoveToNextTaget();
                 break;
             // Hungry
             case 1:
+                stateM.isWalking = false;
                 stateM.isHungry = true;
                 Debug.Log("Hungry: " + stateM.isHungry);
                 stateM.OnStateEnd();
                 break;
             // See dog
             case 2:
+                stateM.isWalking = false;
                 stateM.seeDog = true;
                 Debug.Log("SHIT, SHIT, SHIT !!!");
                 stateM.OnStateEnd();
                 break;
             // Play
             case 3:
+                stateM.isWalking = false;
                 stateM.wantPlay = true;
-                Debug.Log("I have something behind me, I need to cathc it.");
+                Debug.Log("Go play!");
                 stateM.OnStateEnd();
                 break;
             default:
                 Debug.Log("No one here.");
+                MoveToNextTaget();
                 break;
         }
     }

@@ -6,9 +6,11 @@ using UnityEngine.AI;
 public class StateMachine : MonoBehaviour
 {
     public Transform food;
+    public GameObject play;
+    public Camera cameraPlay;
     public List<Transform> wayToWalk;
 
-    public bool isHungry, seeDog, isTired, wantPlay;
+    public bool isHungry, isWalking, seeDog, isTired, wantPlay;
     public float delay = 0;
 
     public NavMeshAgent agent { get; private set; }
@@ -38,10 +40,11 @@ public class StateMachine : MonoBehaviour
     {
         if (isHungry)
             currentState = new EatState();
-        else
+        if (isWalking)
             currentState = new WalkState();
+        if (wantPlay)
+            currentState = new PlayState();
 
         currentState.OnStart(this);
-
     }
 }
