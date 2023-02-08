@@ -5,42 +5,44 @@ using UnityEngine.AI;
 
 public class LitterState : BaseState
 {
-    StateMachine stateM;
     bool ready = false;
     float delay = 2f;
 
     public override void OnStart(StateMachine fsm)
     {
-        stateM = fsm;
-        Debug.Log("Go eat!");
+        stateMachine = fsm;
+        stateMachine.textUI.SetText("Cat: Toilet time.");
+        Debug.Log("Toilet time");
+        stateMachine.agent.SetDestination(stateMachine.litter.position);
     }
     public override void OnUpdate()
     {
-        if (Vector3.Distance(stateM.transform.position, stateM.food.position) <= 3f)
+        if (Vector3.Distance(stateMachine.transform.position, stateMachine.litter.position) <= 1f)
         {
-            stateM.agent.isStopped = true;
             if (!ready)
             {
-                stateM.delay = delay;
+                stateMachine.delay = delay;
                 ready = true;
-                Debug.Log("ready " + ready);
             }
-            else if (stateM.delay <= 0)
+            else if (stateMachine.delay <= 0)
             {
-                stateM.food.localScale = Vector3.Lerp(stateM.food.localScale, Vector3.zero, Time.deltaTime);
+                stateMachine.litter.GetComponent<Renderer>().materials[0].SetColor("_Color", Color.Lerp(stateMachine.litter.GetComponent<Renderer>().materials[0].GetColor("_Color"), new Color(0.4f, 0.4f, 0.4f, 1f), Time.deltaTime));
             }
-            if(stateM.food.localScale.x <= 0.01f)
+            if(stateMachine.litter.GetComponent<Renderer>().materials[0].GetColor("_Color") == new Color(0.4f, 0.4f, 0.4f, 1f))
                 OnStateEnd();
-        }
-        else
-        {
-            stateM.agent.SetDestination(stateM.food.position);
         }
     }
 
     public override void OnStateEnd()
     {
-        Debug.Log("I'm full");
-        //stateM.OnStateEnd();
+        stateMachine.textUI.SetText("Cat: I'm tired.");
+        Debug.Log("I'm tired");
+        stateMachine.needLitter = false;
+        stateMachine.isTired = true;
+        stateMachine.OnStateEnd();
+    }
+
+    public override void OnCollision(Collider other)
+    {
     }
 }

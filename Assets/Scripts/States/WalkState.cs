@@ -5,30 +5,30 @@ using UnityEngine.AI;
 
 public class WalkState : BaseState
 {
-    StateMachine stateM;
     int current = 0;
     bool ready = false;
     float delay = 2f;
 
     public override void OnStart(StateMachine fsm)
     {
-        stateM = fsm;
+        stateMachine = fsm;
+        stateMachine.textUI.SetText("Cat: Go walk around the house!");
         Debug.Log("Go walk around the house!");
         MoveToNextTaget();
     }
 
     public override void OnUpdate()
     {
-        if (Vector3.Distance(stateM.transform.position, stateM.wayToWalk[current].position) <= 1f)
+        if (Vector3.Distance(stateMachine.transform.position, stateMachine.wayToWalk[current].position) <= 1f)
         {
             if(!ready)
             {
                 ready = true;
-                stateM.delay = delay;
+                stateMachine.delay = delay;
             }
-            else if (stateM.delay <= 0)
+            else if (stateMachine.delay <= 0)
             {
-                current = (current + 1) % stateM.wayToWalk.Count;
+                current = (current + 1) % stateMachine.wayToWalk.Count;
                 ready = false;
                 OnStateEnd();
             }
@@ -37,7 +37,7 @@ public class WalkState : BaseState
 
     public override void OnStateEnd()
     {
-        int rand = Random.Range(3, 4);
+        int rand = Random.Range(0, 3);
 
         switch(rand)
         {
@@ -48,24 +48,19 @@ public class WalkState : BaseState
                 break;
             // Hungry
             case 1:
-                stateM.isWalking = false;
-                stateM.isHungry = true;
-                Debug.Log("Hungry: " + stateM.isHungry);
-                stateM.OnStateEnd();
-                break;
-            // See dog
-            case 2:
-                stateM.isWalking = false;
-                stateM.seeDog = true;
-                Debug.Log("SHIT, SHIT, SHIT !!!");
-                stateM.OnStateEnd();
+                stateMachine.isWalking = false;
+                stateMachine.isHungry = true;
+                stateMachine.textUI.SetText("Cat: I'm Hungry.");
+                Debug.Log("I'm Hungry.");
+                stateMachine.OnStateEnd();
                 break;
             // Play
-            case 3:
-                stateM.isWalking = false;
-                stateM.wantPlay = true;
+            case 2:
+                stateMachine.isWalking = false;
+                stateMachine.wantPlay = true;
+                stateMachine.textUI.SetText("Cat: Go play!");
                 Debug.Log("Go play!");
-                stateM.OnStateEnd();
+                stateMachine.OnStateEnd();
                 break;
             default:
                 Debug.Log("No one here.");
@@ -76,8 +71,18 @@ public class WalkState : BaseState
 
     void MoveToNextTaget()
     {
-        stateM.agent.SetDestination(stateM.wayToWalk[current].position);
+        stateMachine.agent.SetDestination(stateMachine.wayToWalk[current].position);
     }
 
-
+    public override void OnCollision(Collider other)
+    {
+        if(other.tag == "Dog")
+        {
+            stateMachine.isWalking = false;
+            stateMachine.seeDog = true;
+            stateMachine.textUI.SetText("Cat: SHIT, SHIT, SHIT!!!");
+            Debug.Log("SHIT, SHIT, SHIT !!!");
+            stateMachine.OnStateEnd();
+        }
+    }
 }

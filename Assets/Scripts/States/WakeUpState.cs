@@ -5,11 +5,11 @@ using UnityEngine.AI;
 
 public class WakeUpState : BaseState
 {
-    StateMachine stateM;
     public override void OnStart(StateMachine fsm)
     {
-        stateM = fsm;
-        stateM.isTired = false;
+        stateMachine = fsm;
+        stateMachine.isTired = false;
+        stateMachine.textUI.SetText("Cat: Wake up!");
         Debug.Log("Wake up!");
         fsm.delay = 2;
     }
@@ -21,16 +21,23 @@ public class WakeUpState : BaseState
 
     public override void OnStateEnd()
     {
-        int rand = Random.Range(1, 2);
+        int rand = Random.Range(0, 2);
 
         if (rand == 0)
         {
-            stateM.isHungry = true;
+            stateMachine.sleepOver = false;
+            stateMachine.isHungry = true;
         }
         else
-            stateM.isWalking = true;
-        Debug.Log("Hungry: "+  stateM.isHungry);
-        stateM.OnStateEnd();
+        {
+            stateMachine.sleepOver = false;
+            stateMachine.isWalking = true;
+        }
+        stateMachine.OnStateEnd();
 
+    }
+
+    public override void OnCollision(Collider other)
+    {
     }
 }

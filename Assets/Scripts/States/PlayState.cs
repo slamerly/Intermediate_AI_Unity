@@ -5,43 +5,44 @@ using UnityEngine.AI;
 
 public class PlayState : BaseState
 {
-    StateMachine stateM;
     bool ready = false;
     float delay = 2f;
     float rotationSpeed = 2;
-    float delayMovement = 5f;
+    float delayMovement = 2.5f;
+    int nbPlay = 0;
+    int nbPlayMax = 4;
     int rand = 0;
 
     public override void OnStart(StateMachine fsm)
     {
-        stateM = fsm;
-        Debug.Log("I have something behind me, I need to cathc it.");
-        stateM.agent.SetDestination(stateM.play.transform.position);
+        stateMachine = fsm;
+        stateMachine.textUI.SetText("Cat: I have something behind me, I need to catch it.");
+        Debug.Log("I have something behind me, I need to catch it.");
+        stateMachine.agent.SetDestination(stateMachine.play.position);
     }
     public override void OnUpdate()
     {
-        if (Vector3.Distance(stateM.transform.position, stateM.play.transform.position) <= 3f)
+        if (Vector3.Distance(stateMachine.transform.position, stateMachine.play.position) <= 3f)
         {
-            stateM.agent.isStopped = true;
+            stateMachine.agent.isStopped = true;
             // Wait
             if (!ready)
             {
-                Debug.Log(ready);
                 ready = true;
 
                 // Switch Camera
                 Camera.main.enabled = false;
-                stateM.cameraPlay.enabled = true;
+                stateMachine.cameraPlay.enabled = true;
 
-                stateM.delay = delay;
+                stateMachine.delay = delay;
             }
-            else if (stateM.delay <= 0)
+            else if (stateMachine.delay <= 0)
             {
                 // Turn arround
                 if (delayMovement <= 0)
                 {
-                    rand = Random.Range(0, 3);
-                    Debug.Log(rand);
+                    rand = Random.Range(0, 2);
+                    nbPlay++;
                     delayMovement = 5f;
                 }
                 else
@@ -53,27 +54,32 @@ public class PlayState : BaseState
 
     public override void OnStateEnd()
     {
-        switch (rand)
+        if (nbPlay <= nbPlayMax)
         {
-            // Continue -1
-            case 0:
-                CatchIt(rand);
-                break;
-            // Continue 1
-            case 1:
-                CatchIt(rand);
-                break;
-            // Tired
-            case 2:
-                stateM.wantPlay = false;
-                stateM.isTired = true;
-                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = true;
-                stateM.cameraPlay.enabled = false;
-                Debug.Log("I'm Tired");
-                stateM.OnStateEnd();
-                break;
-            default:
-                break;
+            switch (rand)
+            {
+                // Continue -1
+                case 0:
+                    CatchIt(rand);
+                    break;
+                // Continue 1
+                case 1:
+                    CatchIt(rand);
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            stateMachine.agent.isStopped = false;
+            stateMachine.wantPlay = false;
+            stateMachine.isTired = true;
+            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = true;
+            stateMachine.cameraPlay.enabled = false;
+            stateMachine.textUI.SetText("Cat: I'm tired.");
+            Debug.Log("I'm Tired");
+            stateMachine.OnStateEnd();
         }
     }
 
@@ -81,13 +87,17 @@ public class PlayState : BaseState
     {
         if (randomInt == 0)
         {
-            stateM.transform.RotateAround(stateM.play.transform.position, Vector3.up, -1 * 100 * Time.deltaTime);
-            stateM.transform.Rotate(new(stateM.transform.rotation.x, stateM.transform.rotation.y + (-1 * rotationSpeed), stateM.transform.rotation.z), Space.World);
+            stateMachine.transform.RotateAround(stateMachine.play.position, Vector3.up, -1 * 100 * Time.deltaTime);
+            stateMachine.transform.Rotate(new(stateMachine.transform.rotation.x, stateMachine.transform.rotation.y + (-1 * rotationSpeed), stateMachine.transform.rotation.z), Space.World);
         }
         else
         {
-            stateM.transform.RotateAround(stateM.play.transform.position, Vector3.up, randomInt * 100 * Time.deltaTime);
-            stateM.transform.Rotate(new(stateM.transform.rotation.x, stateM.transform.rotation.y + (randomInt * rotationSpeed), stateM.transform.rotation.z), Space.World);
+            stateMachine.transform.RotateAround(stateMachine.play.position, Vector3.up, randomInt * 100 * Time.deltaTime);
+            stateMachine.transform.Rotate(new(stateMachine.transform.rotation.x, stateMachine.transform.rotation.y + (randomInt * rotationSpeed), stateMachine.transform.rotation.z), Space.World);
         }
+    }
+
+    public override void OnCollision(Collider other)
+    {
     }
 }

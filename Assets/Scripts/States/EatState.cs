@@ -5,42 +5,47 @@ using UnityEngine.AI;
 
 public class EatState : BaseState
 {
-    StateMachine stateM;
     bool ready = false;
     float delay = 2f;
 
     public override void OnStart(StateMachine fsm)
     {
-        stateM = fsm;
+        stateMachine = fsm;
+        stateMachine.textUI.SetText("Cat: Go eat!");
         Debug.Log("Go eat!");
     }
     public override void OnUpdate()
     {
-        if (Vector3.Distance(stateM.transform.position, stateM.food.position) <= 3f)
+        if (Vector3.Distance(stateMachine.transform.position, stateMachine.food.position) <= 2.5f)
         {
-            stateM.agent.isStopped = true;
+            stateMachine.agent.isStopped = true;
             if (!ready)
             {
-                stateM.delay = delay;
+                stateMachine.delay = delay;
                 ready = true;
-                Debug.Log("ready " + ready);
             }
-            else if (stateM.delay <= 0)
+            else if (stateMachine.delay <= 0)
             {
-                stateM.food.localScale = Vector3.Lerp(stateM.food.localScale, Vector3.zero, Time.deltaTime);
+                stateMachine.food.localScale = Vector3.Lerp(stateMachine.food.localScale, Vector3.zero, Time.deltaTime);
             }
-            if(stateM.food.localScale.x <= 0.01f)
+            if(stateMachine.food.localScale.x <= 0.01f)
                 OnStateEnd();
         }
         else
         {
-            stateM.agent.SetDestination(stateM.food.position);
+            stateMachine.agent.SetDestination(stateMachine.food.position);
         }
     }
 
     public override void OnStateEnd()
     {
-        Debug.Log("I'm full");
-        //stateM.OnStateEnd();
+        stateMachine.agent.isStopped = false;
+        stateMachine.isHungry = false;
+        stateMachine.needLitter = true;
+        stateMachine.OnStateEnd();
+    }
+
+    public override void OnCollision(Collider other)
+    {
     }
 }

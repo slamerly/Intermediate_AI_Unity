@@ -8,4 +8,5 @@ public abstract class BaseState
     abstract public void OnStart(StateMachine fsm);
     abstract public void OnUpdate();
     abstract public void OnStateEnd();
+    abstract public void OnCollision(Collider other);
 }

@@ -1,46 +1,54 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class RunAwayState : BaseState
 {
-    StateMachine stateM;
     bool ready = false;
     float delay = 2f;
+    float runSpeed = 2;
+    float saveSpeed = 0;
 
     public override void OnStart(StateMachine fsm)
     {
-        stateM = fsm;
-        Debug.Log("Go eat!");
+        stateMachine = fsm;
+        Debug.Log("Go! Go! Go!");
+        saveSpeed = stateMachine.agent.speed;
+        stateMachine.agent.speed = saveSpeed * runSpeed;
+        stateMachine.agent.SetDestination(stateMachine.bed.position);
     }
     public override void OnUpdate()
     {
-        if (Vector3.Distance(stateM.transform.position, stateM.food.position) <= 3f)
+        if (Vector3.Distance(stateMachine.transform.position, stateMachine.bed.position) <= 1f)
         {
-            stateM.agent.isStopped = true;
             if (!ready)
             {
-                stateM.delay = delay;
+                stateMachine.delay = delay;
                 ready = true;
-                Debug.Log("ready " + ready);
             }
-            else if (stateM.delay <= 0)
+            else if (stateMachine.delay <= 0)
             {
-                stateM.food.localScale = Vector3.Lerp(stateM.food.localScale, Vector3.zero, Time.deltaTime);
-            }
-            if(stateM.food.localScale.x <= 0.01f)
                 OnStateEnd();
-        }
-        else
-        {
-            stateM.agent.SetDestination(stateM.food.position);
+            }
         }
     }
 
     public override void OnStateEnd()
     {
-        Debug.Log("I'm full");
-        //stateM.OnStateEnd();
+        stateMachine.textUI.SetText("Cat: I'm safe here.");
+        Debug.Log("I'm safe here.");
+        stateMachine.agent.speed = saveSpeed;
+
+        stateMachine.seeDog = false;
+        stateMachine.needLitter = true;
+
+        stateMachine.OnStateEnd();
+    }
+
+    public override void OnCollision(Collider other)
+    {
     }
 }
