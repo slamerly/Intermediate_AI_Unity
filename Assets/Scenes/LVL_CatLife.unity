@@ -5899,6 +5899,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 430430060}
     - target: {fileID: 3099087118144420515, guid: f337063dbbd7b744ea6c62488e77802a, type: 3}
+      propertyPath: defaultColorLitter.b
+      value: 0.056959715
+      objectReference: {fileID: 0}
+    - target: {fileID: 3099087118144420515, guid: f337063dbbd7b744ea6c62488e77802a, type: 3}
+      propertyPath: defaultColorLitter.g
+      value: 0.86808276
+      objectReference: {fileID: 0}
+    - target: {fileID: 3099087118144420515, guid: f337063dbbd7b744ea6c62488e77802a, type: 3}
+      propertyPath: defaultColorLitter.r
+      value: 0.9433962
+      objectReference: {fileID: 0}
+    - target: {fileID: 3099087118144420515, guid: f337063dbbd7b744ea6c62488e77802a, type: 3}
       propertyPath: wayToWalk.Array.data[0]
       value: 
       objectReference: {fileID: 663455224}
@@ -5943,7 +5955,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205792508310142561, guid: 534ef9ee7eb8c354a9d2313fe24748ea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -21.54
+      value: -19.37
       objectReference: {fileID: 0}
     - target: {fileID: 4205792508310142561, guid: 534ef9ee7eb8c354a9d2313fe24748ea, type: 3}
       propertyPath: m_LocalRotation.w
